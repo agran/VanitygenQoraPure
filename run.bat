@@ -1,0 +1,1 @@
+start "Qora" java -Xmx512m -jar VanitygenQoraPure.jar
