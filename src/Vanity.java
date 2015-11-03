@@ -5,6 +5,7 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 
+import qora.crypto.AddressFormatException;
 import qora.crypto.Base58;
 import qora.crypto.Crypto;
 
@@ -22,7 +23,7 @@ public class Vanity {
 	public static long startTime = 0;
 
 	@SuppressWarnings("resource")
-	public static void main(String args[])
+	public static void main(String args[]) throws AddressFormatException
 	{	
 			Scanner scanner = new Scanner(System.in);
 			
@@ -103,7 +104,7 @@ public class Vanity {
 				boolean check = true;
 				for (int m=0; m<=command.length()-1; m++){
 					String sub_str = command.substring(m, m+1);
-					if(Base58.ALPHABET.indexOf(sub_str) == -1)
+					if("123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz".indexOf(sub_str) == -1)
 					{
 						check = false;
 					}
