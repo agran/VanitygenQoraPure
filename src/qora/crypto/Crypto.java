@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import utils.Pair;
+
 import com.google.common.primitives.Bytes;
 
 public class Crypto {
@@ -47,6 +49,20 @@ public class Crypto {
 	{
 		//DOUBLE SHA256
 		return this.digest(this.digest(input));
+	}
+	
+	public Pair<byte[], byte[]> createKeyPair(byte[] seed)
+	{
+		try
+		{
+			//GENERATE PUBLIC KEY
+			return Ed25519.createKeyPair(seed);
+		} 
+		catch (Exception e) 
+		{
+			e.printStackTrace();
+			return null;
+		}
 	}
 	
 	public String getAddress(byte[] publicKey)
@@ -129,5 +145,4 @@ public class Crypto {
 			return false;
 		}
 	}
-	
 }

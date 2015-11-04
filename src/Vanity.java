@@ -8,11 +8,11 @@ import java.io.IOException;
 import qora.crypto.AddressFormatException;
 import qora.crypto.Base58;
 import qora.crypto.Crypto;
+import qora.crypto.Ed25519;
+import utils.Pair;
 
 import com.google.common.primitives.Bytes;
 import com.google.common.primitives.Ints;
-
-import Punisher.NaCl.Ed25519;;
 
 
 public class Vanity {
@@ -23,16 +23,21 @@ public class Vanity {
 	public static long startTime = 0;
 
 	@SuppressWarnings("resource")
-	public static void main(String args[]) throws AddressFormatException
+	public static void main(String args[])
 	{	
 			Scanner scanner = new Scanner(System.in);
 			
-			System.out.println("VanitygenQoraPure 1.0.0 (c) agran@agran.net");
+			System.out.println("VanitygenQoraPure 1.1.0 (c) agran@agran.net");
 				
 			if(args.length>0 && args[0].length()>40)
 			{
 				
-				byte[] seed = Base58.decode(args[0]);
+				byte[] seed = null;
+				try {
+					seed = Base58.decode(args[0]);
+				} catch (AddressFormatException e1) {
+					e1.printStackTrace();
+				};
 				
 				int nonce = 0;
 				
@@ -54,12 +59,9 @@ public class Vanity {
 					{
 						byte[] accountSeed = generateAccountSeed(seed, nonce);
 						
-						String address = null;
-						try {
-							address = Crypto.getInstance().getAddress(Ed25519.PublicKeyFromSeed(accountSeed));
-						} catch (Exception e) {
-							e.printStackTrace();
-						}
+						Pair<byte[], byte[]> keyPair = Crypto.getInstance().createKeyPair(accountSeed);
+						byte[] publicKey = keyPair.getB();
+						String address = Crypto.getInstance().getAddress(publicKey);
 						
 					    String doneseedaddress = Base58.encode(accountSeed);
 					    
@@ -174,17 +176,13 @@ public class Vanity {
 				
 				nonce = 0;
 				
-				String address = null;
-				
 				while(nonce<10)
 				{
 					byte[] accountSeed = generateAccountSeed(seed, nonce);
-
-					try {
-						address = Crypto.getInstance().getAddress(Ed25519.PublicKeyFromSeed(accountSeed));
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
+					
+					Pair<byte[], byte[]> keyPair = Crypto.getInstance().createKeyPair(accountSeed);
+					byte[] publicKey = keyPair.getB();
+					String address = Crypto.getInstance().getAddress(publicKey);
 					
 				    if(address.startsWith(pattern))
 				    {
@@ -262,5 +260,3 @@ public class Vanity {
 		} 
 	}	
 }
-
-
