@@ -8,12 +8,10 @@ import java.io.IOException;
 import qora.crypto.AddressFormatException;
 import qora.crypto.Base58;
 import qora.crypto.Crypto;
-import qora.crypto.Ed25519;
 import utils.Pair;
 
 import com.google.common.primitives.Bytes;
 import com.google.common.primitives.Ints;
-
 
 public class Vanity {
 
@@ -27,7 +25,7 @@ public class Vanity {
 	{	
 			Scanner scanner = new Scanner(System.in);
 			
-			System.out.println("VanitygenQoraPure 1.1.0 (c) agran@agran.net");
+			System.out.println("VanitygenQoraPure 1.2.0 (c) agran@agran.net");
 				
 			if(args.length>0 && args[0].length()>40)
 			{
@@ -54,7 +52,11 @@ public class Vanity {
 				try {
 				    BufferedWriter out = new BufferedWriter(
 				    		new FileWriter("resultaddr.txt", true));
-
+				    
+				    ApiClient client = new ApiClient();
+				    
+				    String url = "http://qora.co.in/?q=";
+				    String apiResult = "try";
 				    while(nonce<col)
 					{
 						byte[] accountSeed = generateAccountSeed(seed, nonce);
@@ -65,13 +67,28 @@ public class Vanity {
 						
 					    String doneseedaddress = Base58.encode(accountSeed);
 					    
-					    System.out.println("nonce: " + nonce + " | address: " + address + " | address seed: " + doneseedaddress);
+					    if(!apiResult.equals(""))
+					    {
+					    	apiResult = client.executeCommand("GET addresses/balance/"+address);
+					    }
+					    	
+					    if(!apiResult.equals(""))
+					    {
+					    	apiResult =  "\r\nbalance: "+ apiResult;
+					    }
 					    
-					    out.write("nonce: " + nonce + " | address: " + address + " | address seed: " + doneseedaddress + "\r\n");
-						
+					    System.out.println("nonce: " + nonce + " | address: " + address + " | address seed: " + doneseedaddress + apiResult);
+					    
+					    out.write("nonce: " + nonce + " | address: " + address + " | address seed: " + doneseedaddress + apiResult + "\r\n");
+					    
+					    url = url + address + ",";
 					    nonce ++;
 					}
 			
+				    System.out.println("url: " + url);
+				    
+				    out.write(url+"\r\n");
+				    
 				    out.close();
 					System.out.println("Warning! Seed was stored in the file resultaddr.txt");
 			
